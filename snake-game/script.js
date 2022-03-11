@@ -61,16 +61,6 @@ function drawApple(ctx, x, y) {
     ctx.drawImage(image, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 }
 
-// function drawScore(snake) {
-//     let scoreCanvas = document.getElementById("scoreBoard");
-//     let scoreCtx = scoreCanvas.getContext("2d");
-
-//     scoreCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-//     scoreCtx.font = "30px Arial";
-//     scoreCtx.fillStyle = snake.color
-//     scoreCtx.fillText(snake.score, 10, scoreCanvas.scrollHeight / 2);
-// }
-
 function draw() {
     setInterval(function() {
         let snakeCanvas = document.getElementById("snakeBoard");
@@ -93,7 +83,6 @@ function draw() {
         ctx.fillText("Score : "+ snake.score, 500, 30);
         ctx.fillText("Level : 1", 500, 580);
 
-        drawScore(snake);
     }, REDRAW_INTERVAL);
 }
 
