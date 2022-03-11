@@ -41,7 +41,7 @@ function initSnake(color) {
         score: 0,
     }
 }
-let snake = initSnake("purple");
+let snake = initSnake("green");
 
 let apples = [{
     position: initPosition(),
@@ -78,13 +78,6 @@ function drawCell(ctx, x, y, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 }
-
-// function drawApple(ctx, x, y) {
-//     let image = document.createElement("img");
-//     image.src = "assets/apple.png";
-
-//     ctx.drawImage(image, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-// }
 
 function insertImage(ctx, x, y, name) {
     let image = document.createElement("img");
@@ -136,9 +129,12 @@ function draw() {
 
         ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
         
-        drawCell(ctx, snake.head.x, snake.head.y, snake.color);
+        // drawCell(ctx, snake.head.x, snake.head.y, snake.color);
+        insertImage(ctx, snake.head.x, snake.head.y, "snake-head");
+
         for (let i = 1; i < snake.body.length; i++) {
-            drawCell(ctx, snake.body[i].x, snake.body[i].y, snake.color);
+            // drawCell(ctx, snake.body[i].x, snake.body[i].y, snake.color);
+            insertImage(ctx, snake.body[i].x, snake.body[i].y, "snake-body");
         }
 
         for (let i = 0; i < apples.length; i++) {
@@ -212,6 +208,7 @@ function eat(snake, apples, potion) {
     if (snake.head.x == potion.position.x && snake.head.y == potion.position.y) {
         potion.position = initPosition();
         snake.score++;
+        snake.body.push({x: snake.head.x, y: snake.head.y});
         life++;
     }
 }
