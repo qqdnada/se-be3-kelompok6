@@ -10,6 +10,8 @@ const DIRECTION = {
     UP: 2,
     DOWN: 3,
 }
+const soundEat = new Audio("assets/soundEat.mp3");
+const soundGameOver = new Audio("assets/soundGameOver.mp3");
 // Soal no 2: Pengaturan Speed (semakin kecil semakin cepat) ubah dari 150 ke 120
 const MOVE_INTERVAL = 120;
 
@@ -138,6 +140,7 @@ function eat(snake, apples) {
         let apple = apples[i];
         if (snake.head.x == apple.position.x && snake.head.y == apple.position.y) {
             apple.position = initPosition();
+            soundEat.play();
             snake.score++;
             snake.body.push({x: snake.head.x, y: snake.head.y});
         }
@@ -182,8 +185,9 @@ function checkCollision(snakes) {
     }
     if (isCollide) {
         // Soal no 5: Add game over audio:
-        var audio = new Audio('game-over.mp3');
-        audio.play();
+        // var audio = new Audio('game-over.mp3');
+        // audio.play();
+        soundGameOver.play();
 
         alert("Game over");
         snake1 = initSnake("purple");
