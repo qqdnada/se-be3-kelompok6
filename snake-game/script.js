@@ -10,7 +10,8 @@ const DIRECTION = {
     DOWN: 3,
 }
 
-const MOVE_INTERVAL = 120;
+// const MOVE_INTERVAL = 120;
+let move_interval;
 
 function initPosition() {
     return {
@@ -54,26 +55,65 @@ let potion = {
     position: initPosition(),
 };
 
+let level = [
+    {
+        speed: 120,
+    },
+    {
+        speed: 110,
+    },
+    {
+        speed: 100,
+    },
+    {
+        speed: 90,
+    },
+    {
+        speed: 80,
+    }
+];
+let current_level = 1;
+
 function drawCell(ctx, x, y, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 }
 
-function drawApple(ctx, x, y) {
+// function drawApple(ctx, x, y) {
+//     let image = document.createElement("img");
+//     image.src = "assets/apple.png";
+
+//     ctx.drawImage(image, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+// }
+
+function insertImage(ctx, x, y, name) {
     let image = document.createElement("img");
-    image.src = "assets/apple.png";
+    image.src = `assets/${name}.png`;
 
     ctx.drawImage(image, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 }
 
-function drawScore(snake) {
-    let scoreCanvas = document.getElementById("scoreBoard");
-    let scoreCtx = scoreCanvas.getContext("2d");
+function getCurrentLevel(ctx, score) {
 
-    scoreCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-    scoreCtx.font = "30px Arial";
-    scoreCtx.fillStyle = snake.color;
-    scoreCtx.fillText(snake.score, 10, scoreCanvas.scrollHeight / 2);
+    if (score > 25) {
+        ctx.fillText(`WIN`, 500, 580);
+        return;
+    }
+
+    if (score >= 0 && score < 5) {
+        current_level = 1;
+    } else if (score >= 5 && score < 10) {
+        current_level = 2;
+    } else if (score >= 10 && score < 15) {
+        current_level = 3;
+    } else if (score >= 15 && score < 20) {
+        current_level = 4;
+    } else if (score >= 20 && score < 25) {
+        current_level = 5;
+    }
+
+    move_interval = level[current_level - 1].speed;
+    ctx.fillText(`Level : ${current_level}`, 500, 580);
 }
 
 function checkPrime(number) {
@@ -103,24 +143,44 @@ function draw() {
 
         for (let i = 0; i < apples.length; i++) {
             let apple = apples[i];
-            drawApple(ctx, apple.position.x, apple.position.y);
+            insertImage(ctx, apple.position.x, apple.position.y, "apple");
         }
 
         for (let i = 0; i < life; i++) {
-            let image = document.createElement("img");
-            image.src = "assets/heart.png";
-        
-            ctx.drawImage(image, i * CELL_SIZE, 0, CELL_SIZE, CELL_SIZE);
+            insertImage(ctx, i, 0, "heart");
         }
 
         if (checkPrime(snake.score)) {
-            let imagePotion = document.createElement("img");
-            imagePotion.src = "assets/potion.png";
-        
-            ctx.drawImage(imagePotion, potion.position.x * CELL_SIZE, potion.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            insertImage(ctx, potion.position.x, potion.position.y, "potion");
         }
 
-        drawScore(snake);
+        // drawScore(snake);
+        
+        ctx.color = snake.color;
+        ctx.font = "20px Arial";
+
+        getCurrentLevel(ctx, snake.score);
+        ctx.fillText("Score : "+ snake.score, 485, 30);
+        ctx.fillText("Speed : "+ level[current_level-1].speed, 485, 50);
+        // if (snake.score >=0 && snake.score < 5) {
+        //     move_interval = level[0].speed;
+        //     ctx.fillText("Level : 1", 500, 580);
+        // } else if (snake.score >=5 && snake.score < 10) {
+        //     move_interval = level[1].speed;
+        //     ctx.fillText("Level : 2", 500, 580);
+        // } else if (snake.score >= 10 && snake.score < 15){
+        //     move_interval = level[2].speed;
+        //     ctx.fillText("Level : 3", 500, 580);
+        // } else if (snake.score >= 15 && snake.score < 20){
+        //     move_interval = level[3].speed;
+        //     ctx.fillText("Level : 4", 500, 580);
+        // } else if (snake.score >= 20 && snake.score < 25){
+        //     move_interval = level[4].speed;
+        //     ctx.fillText("Level : 5", 500, 580);
+        // } else {
+        //     ctx.fillText("WIN", 500, 580);
+        // }
+
     }, REDRAW_INTERVAL);
 }
 
@@ -195,6 +255,7 @@ function checkCollision(snakes) {
     if (isCollide) {
         alert("Game over");
         snake = initSnake("purple");
+        life = 3;
     }
     return isCollide;
 }
@@ -219,7 +280,7 @@ function move(snake) {
     if (!checkCollision([snake])) {
         setTimeout(function() {
             move(snake);
-        }, MOVE_INTERVAL);
+        }, move_interval);
     } else {
         initGame();
     }
