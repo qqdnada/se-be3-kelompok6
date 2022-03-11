@@ -81,7 +81,21 @@ function draw() {
         ctx.color = snake.color;
         ctx.font = "20px Arial";
         ctx.fillText("Score : "+ snake.score, 500, 30);
-        ctx.fillText("Level : 1", 500, 580);
+        if(snake.score >=0 && snake.score < 5){
+            ctx.fillText("Level : 1", 500, 580);
+        }else if(snake.score >=5 && snake.score < 10){
+            ctx.fillText("Level : 2", 500, 580);
+        } else if(snake.score >= 10 && snake.score < 15){
+            ctx.fillText("Level : 3", 500, 580);
+        } else if(snake.score >= 15 && snake.score < 20){
+            ctx.fillText("Level : 4", 500, 580);
+        }else if(snake.score >= 20 && snake.score < 25){
+            ctx.fillText("Level : 5", 500, 580);
+        }else{
+            ctx.fillText("WIN", 500, 580);
+        }
+        
+        
 
     }, REDRAW_INTERVAL);
 }
