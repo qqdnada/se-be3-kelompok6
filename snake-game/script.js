@@ -237,24 +237,39 @@ function moveUp(snake) {
     eat(snake, apples, potion);
 }
 
-function checkCollision(snakes) {
+function checkCollision() {
     let isCollide = false;
-    //this
-    for (let i = 0; i < snakes.length; i++) {
-        for (let j = 0; j < snakes.length; j++) {
-            for (let k = 1; k < snakes[j].body.length; k++) {
-                if (snakes[i].head.x == snakes[j].body[k].x && snakes[i].head.y == snakes[j].body[k].y) {
-                    isCollide = true;
-                }
-            }
+    
+    // for (let i = 0; i < snakes.length; i++) {
+    //     for (let j = 0; j < snakes.length; j++) {
+    //         for (let k = 1; k < snakes[j].body.length; k++) {
+    //             if (snakes[i].head.x == snakes[j].body[k].x && snakes[i].head.y == snakes[j].body[k].y) {
+    //                 isCollide = true;
+    //             }
+    //         }
+    //     }
+    // }
+
+    // cek collision antara snake head dan snake body
+    for (let i = 1; i < snake.body.length; i++) {
+        if (snake.head.x == snake.body[i].x && snake.head.y == snake.body[i].y) {
+            isCollide = true;
         }
     }
+
     if (isCollide) {
-        alert("Game over");
-        snake = initSnake("purple");
-        life = 3;
+        // alert("Game over");
+        // life = 3;
+        life--;
+        snake.body.splice(0, snake.body.length);
+        snake.body.push({x: snake.head.x, y: snake.head.y});
+
+        if (life == 0) {
+            alert("Game over");
+            snake = initSnake("purple");
+        }
     }
-    return isCollide;
+    // return isCollide;
 }
 
 function move(snake) {
@@ -273,12 +288,24 @@ function move(snake) {
             break;
     }
     moveBody(snake);
+    checkCollision();
     
-    if (!checkCollision([snake])) {
+    // if (!checkCollision()) {
+    //     setTimeout(function() {
+    //         move(snake);
+    //     }, move_interval);
+    // } else {
+    //     initGame();
+    // }
+
+    if (life > 0) {
         setTimeout(function() {
             move(snake);
         }, move_interval);
     } else {
+        // alert("Game over");
+        // snake = initSnake("purple");
+        life = 3;
         initGame();
     }
 }
