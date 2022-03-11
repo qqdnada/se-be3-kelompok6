@@ -47,7 +47,12 @@ let apples = [{
 },
 {
     position: initPosition(),
-}]
+}];
+
+let life = 3;
+let potion = {
+    position: initPosition(),
+};
 
 function drawCell(ctx, x, y, color) {
     ctx.fillStyle = color;
@@ -67,8 +72,21 @@ function drawScore(snake) {
 
     scoreCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     scoreCtx.font = "30px Arial";
-    scoreCtx.fillStyle = snake.color
+    scoreCtx.fillStyle = snake.color;
     scoreCtx.fillText(snake.score, 10, scoreCanvas.scrollHeight / 2);
+}
+
+function checkPrime(number) {
+    if (number < 2) {
+        return false;
+    }
+
+    for (let i = 2; i < number; i++) {
+        if (number % i == 0) {
+            return false;
+        }
+    }
+    return true;
 }
 
 function draw() {
@@ -86,6 +104,20 @@ function draw() {
         for (let i = 0; i < apples.length; i++) {
             let apple = apples[i];
             drawApple(ctx, apple.position.x, apple.position.y);
+        }
+
+        for (let i = 0; i < life; i++) {
+            let image = document.createElement("img");
+            image.src = "assets/heart.png";
+        
+            ctx.drawImage(image, i * CELL_SIZE, 0, CELL_SIZE, CELL_SIZE);
+        }
+
+        if (checkPrime(snake.score)) {
+            let imagePotion = document.createElement("img");
+            imagePotion.src = "assets/potion.png";
+        
+            ctx.drawImage(imagePotion, potion.position.x * CELL_SIZE, potion.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
         }
 
         drawScore(snake);
@@ -107,7 +139,7 @@ function teleport(snake) {
     }
 }
 
-function eat(snake, apples) {
+function eat(snake, apples, potion) {
     for (let i = 0; i < apples.length; i++) {
         let apple = apples[i];
         if (snake.head.x == apple.position.x && snake.head.y == apple.position.y) {
@@ -116,30 +148,36 @@ function eat(snake, apples) {
             snake.body.push({x: snake.head.x, y: snake.head.y});
         }
     }
+
+    if (snake.head.x == potion.position.x && snake.head.y == potion.position.y) {
+        potion.position = initPosition();
+        snake.score++;
+        life++;
+    }
 }
 
 function moveLeft(snake) {
     snake.head.x--;
     teleport(snake);
-    eat(snake, apples);
+    eat(snake, apples, potion);
 }
 
 function moveRight(snake) {
     snake.head.x++;
     teleport(snake);
-    eat(snake, apples);
+    eat(snake, apples, potion);
 }
 
 function moveDown(snake) {
     snake.head.y++;
     teleport(snake);
-    eat(snake, apples);
+    eat(snake, apples, potion);
 }
 
 function moveUp(snake) {
     snake.head.y--;
     teleport(snake);
-    eat(snake, apples);
+    eat(snake, apples, potion);
 }
 
 function checkCollision(snakes) {
