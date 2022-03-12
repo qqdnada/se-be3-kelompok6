@@ -153,6 +153,7 @@ let level = [
     }
 ];
 let current_level = 0;
+let next_level = 1;
 
 function drawCell(ctx, x, y, color) {
     ctx.fillStyle = color;
@@ -196,6 +197,12 @@ function getCurrentLevel(ctx, score) {
         current_level = 3;
     } else if (score >= 20 && score < 25) {
         current_level = 4;
+    }
+
+    if (current_level == next_level) {
+        next_level++;
+        let audio = new Audio('assets/sound/level-up.mp3');
+        audio.play();
     }
 
     move_interval = level[current_level].speed;
