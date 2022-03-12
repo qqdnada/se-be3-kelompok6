@@ -63,22 +63,113 @@ let level = [
     },
     {
         speed: 110,
+        wall: [
+            {
+                start: {
+                    x: 5,
+                    y: 15,
+                },
+                end: {
+                    x: 25,
+                    y: 15,
+                }
+            }
+        ],
     },
     {
         speed: 100,
+        wall: [
+            {
+                start: {
+                    x: 5,
+                    y: 12,
+                },
+                end: {
+                    x: 25,
+                    y: 12,
+                }
+            },
+            {
+                start: {
+                    x: 5,
+                    y: 18,
+                },
+                end: {
+                    x: 25,
+                    y: 18,
+                }
+            }
+        ],
     },
     {
         speed: 90,
+        wall: [
+            {
+                start: {
+                    x: 0,
+                    y: 15,
+                },
+                end: {
+                    x: 30,
+                    y: 15,
+                }
+            },
+            {
+                start: {
+                    x: 15,
+                    y: 0,
+                },
+                end: {
+                    x: 15,
+                    y: 15,
+                }
+            }
+        ],
     },
     {
         speed: 80,
+        wall: [
+            {
+                start: {
+                    x: 0,
+                    y: 15,
+                },
+                end: {
+                    x: 30,
+                    y: 15,
+                }
+            },
+            {
+                start: {
+                    x: 15,
+                    y: 0,
+                },
+                end: {
+                    x: 15,
+                    y: 30,
+                }
+            }
+        ],
     }
 ];
-let current_level = 1;
+let current_level = 0;
 
 function drawCell(ctx, x, y, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+}
+
+function drawWall(ctx, wall) {
+    for (let i = 0; i < wall.length; i++) {
+        let start = wall[i].start;
+        let end = wall[i].end;
+
+        if (start.x == end.x) {
+            ctx.fillRect(start.x * CELL_SIZE, start.y * CELL_SIZE, CELL_SIZE, (end.y - start.y) * CELL_SIZE);
+        } else if (start.y == end.y) {
+            ctx.fillRect(start.x * CELL_SIZE, start.y * CELL_SIZE, (end.x - start.x) * CELL_SIZE, CELL_SIZE);
+        }
+    }
 }
 
 function insertImage(ctx, x, y, name) {
@@ -96,19 +187,22 @@ function getCurrentLevel(ctx, score) {
     }
 
     if (score >= 0 && score < 5) {
-        current_level = 1;
+        current_level = 0;
     } else if (score >= 5 && score < 10) {
-        current_level = 2;
+        current_level = 1;
     } else if (score >= 10 && score < 15) {
-        current_level = 3;
+        current_level = 2;
     } else if (score >= 15 && score < 20) {
-        current_level = 4;
+        current_level = 3;
     } else if (score >= 20 && score < 25) {
-        current_level = 5;
+        current_level = 4;
     }
 
-    move_interval = level[current_level - 1].speed;
-    ctx.fillText(`Level : ${current_level}`, 500, 580);
+    move_interval = level[current_level].speed;
+    ctx.fillText(`Level : ${current_level + 1}`, 500, 580);
+    if (current_level > 0) {
+        drawWall(ctx, level[current_level].wall);
+    }
 }
 
 function checkPrime(number) {
@@ -130,7 +224,7 @@ function draw() {
         let ctx = snakeCanvas.getContext("2d");
 
         ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-        
+
         // drawCell(ctx, snake.head.x, snake.head.y, snake.color);
         insertImage(ctx, snake.head.x, snake.head.y, "snake-head");
 
@@ -159,7 +253,7 @@ function draw() {
 
         getCurrentLevel(ctx, snake.score);
         ctx.fillText("Score : "+ snake.score, 485, 30);
-        ctx.fillText("Speed : "+ level[current_level-1].speed, 485, 50);
+        ctx.fillText("Speed : "+ level[current_level].speed, 485, 50);
         // if (snake.score >=0 && snake.score < 5) {
         //     move_interval = level[0].speed;
         //     ctx.fillText("Level : 1", 500, 580);
