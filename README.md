@@ -9,5 +9,7 @@
 
 Wireframe Game Snake :
 
-![Sketsa](https://user-images.githubusercontent.com/64117746/157789628-d7484da9-e409-4261-ac95-1f333938d32d.jpg)
+![Screenshot 2022-03-12 085509](https://user-images.githubusercontent.com/64117746/157999288-9989e218-0f64-4636-9887-d4802068efaf.jpg)
+
+
 
