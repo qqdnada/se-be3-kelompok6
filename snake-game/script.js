@@ -233,6 +233,13 @@ function draw() {
             insertImage(ctx, snake.body[i].x, snake.body[i].y, "snake-body");
         }
 
+        ctx.color = snake.color;
+        ctx.font = "20px Arial";
+
+        getCurrentLevel(ctx, snake.score);
+        ctx.fillText("Score : "+ snake.score, 485, 30);
+        ctx.fillText("Speed : "+ level[current_level].speed, 485, 50);
+
         for (let i = 0; i < apples.length; i++) {
             let apple = apples[i];
             insertImage(ctx, apple.position.x, apple.position.y, "apple");
@@ -248,12 +255,6 @@ function draw() {
 
         // drawScore(snake);
         
-        ctx.color = snake.color;
-        ctx.font = "20px Arial";
-
-        getCurrentLevel(ctx, snake.score);
-        ctx.fillText("Score : "+ snake.score, 485, 30);
-        ctx.fillText("Speed : "+ level[current_level].speed, 485, 50);
         // if (snake.score >=0 && snake.score < 5) {
         //     move_interval = level[0].speed;
         //     ctx.fillText("Level : 1", 500, 580);
@@ -352,6 +353,16 @@ function checkCollision() {
     for (let i = 1; i < snake.body.length; i++) {
         if (snake.head.x == snake.body[i].x && snake.head.y == snake.body[i].y) {
             isCollide = true;
+        }
+    }
+
+    // cek collision antara snake head dan wall
+    if (current_level > 0) {
+        let wall = level[current_level].wall;
+        for (let i = 0; i < wall.length; i++) {
+            if (snake.head.x >= wall[i].start.x && snake.head.x <= wall[i].end.x && snake.head.y >= wall[i].start.y && snake.head.y <= wall[i].end.y) {
+                isCollide = true;
+            }
         }
     }
 
