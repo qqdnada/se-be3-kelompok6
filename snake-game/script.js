@@ -10,6 +10,8 @@ const DIRECTION = {
     DOWN: 3,
 }
 
+const AUDIO_EAT = new Audio('assets/sound/eat.mp3');
+
 // const MOVE_INTERVAL = 120;
 let move_interval;
 
@@ -81,7 +83,7 @@ function drawCell(ctx, x, y, color) {
 
 function insertImage(ctx, x, y, name) {
     let image = document.createElement("img");
-    image.src = `assets/${name}.png`;
+    image.src = `assets/images/${name}.png`;
 
     ctx.drawImage(image, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 }
@@ -202,6 +204,7 @@ function eat(snake, apples, potion) {
             apple.position = initPosition();
             snake.score++;
             snake.body.push({x: snake.head.x, y: snake.head.y});
+            AUDIO_EAT.play();
         }
     }
 
@@ -209,6 +212,7 @@ function eat(snake, apples, potion) {
         potion.position = initPosition();
         snake.score++;
         snake.body.push({x: snake.head.x, y: snake.head.y});
+        AUDIO_EAT.play();
         life++;
     }
 }
@@ -265,6 +269,9 @@ function checkCollision() {
         snake.body.push({x: snake.head.x, y: snake.head.y});
 
         if (life == 0) {
+            let audio = new Audio('assets/sound/game-over.mp3');
+            audio.play();
+
             alert("Game over");
             snake = initSnake("purple");
         }
