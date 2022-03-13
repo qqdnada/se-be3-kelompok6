@@ -1,8 +1,9 @@
+const CANVAS_WIDTH_SIZE = 600;
+const CANVAS_HEIGHT_SIZE = 420;
 const CELL_SIZE = 20;
-const CANVAS_SIZE = 600;
-const REDRAW_INTERVAL = 50;
-const WIDTH = CANVAS_SIZE / CELL_SIZE;
-const HEIGHT = CANVAS_SIZE / CELL_SIZE;
+const WIDTH = CANVAS_WIDTH_SIZE / CELL_SIZE;
+const HEIGHT = CANVAS_HEIGHT_SIZE / CELL_SIZE;
+
 const DIRECTION = {
     LEFT: 0,
     RIGHT: 1,
@@ -10,10 +11,10 @@ const DIRECTION = {
     DOWN: 3,
 }
 
-const AUDIO_EAT = new Audio('assets/sound/eat.mp3');
-
-// const MOVE_INTERVAL = 120;
+const REDRAW_INTERVAL = 50;
 let move_interval;
+
+const AUDIO_EAT = new Audio('assets/sound/eat.mp3');
 
 function initPosition() {
     return {
@@ -35,15 +36,14 @@ function initDirection() {
     return Math.floor(Math.random() * 4);
 }
 
-function initSnake(color) {
+function initSnake() {
     return {
-        color: color,
         ...initHeadAndBody(),
         direction: initDirection(),
         score: 0,
     }
 }
-let snake = initSnake("green");
+let snake = initSnake();
 
 let apples = [{
     position: initPosition(),
@@ -67,11 +67,11 @@ let level = [
             {
                 start: {
                     x: 5,
-                    y: 15,
+                    y: 10,
                 },
                 end: {
                     x: 25,
-                    y: 15,
+                    y: 10,
                 }
             }
         ],
@@ -82,21 +82,21 @@ let level = [
             {
                 start: {
                     x: 5,
-                    y: 12,
+                    y: 8,
                 },
                 end: {
                     x: 25,
-                    y: 12,
+                    y: 8,
                 }
             },
             {
                 start: {
                     x: 5,
-                    y: 18,
+                    y: 12,
                 },
                 end: {
                     x: 25,
-                    y: 18,
+                    y: 12,
                 }
             }
         ],
@@ -107,11 +107,11 @@ let level = [
             {
                 start: {
                     x: 0,
-                    y: 15,
+                    y: 10,
                 },
                 end: {
                     x: 30,
-                    y: 15,
+                    y: 10,
                 }
             },
             {
@@ -121,7 +121,7 @@ let level = [
                 },
                 end: {
                     x: 15,
-                    y: 15,
+                    y: 10,
                 }
             }
         ],
@@ -132,11 +132,11 @@ let level = [
             {
                 start: {
                     x: 0,
-                    y: 15,
+                    y: 10,
                 },
                 end: {
                     x: 30,
-                    y: 15,
+                    y: 10,
                 }
             },
             {
@@ -146,7 +146,7 @@ let level = [
                 },
                 end: {
                     x: 15,
-                    y: 30,
+                    y: 21,
                 }
             }
         ],
@@ -155,20 +155,20 @@ let level = [
 let current_level = 0;
 let next_level = 1;
 
-function drawCell(ctx, x, y, color) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-}
+// function drawCell(ctx, x, y, color) {
+//     ctx.fillStyle = color;
+//     ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+// }
 
 function drawWall(ctx, wall) {
     for (let i = 0; i < wall.length; i++) {
-        let start = wall[i].start;
+        let srt = wall[i].start;
         let end = wall[i].end;
 
-        if (start.x == end.x) {
-            ctx.fillRect(start.x * CELL_SIZE, start.y * CELL_SIZE, CELL_SIZE, (end.y - start.y) * CELL_SIZE);
-        } else if (start.y == end.y) {
-            ctx.fillRect(start.x * CELL_SIZE, start.y * CELL_SIZE, (end.x - start.x) * CELL_SIZE, CELL_SIZE);
+        for( let x = srt.x; x <= end.x; x++) {
+            for( let y = srt.y; y <= end.y; y++) {
+                insertImage(ctx, x, y, "wall");
+            }
         }
     }
 }
@@ -180,11 +180,46 @@ function insertImage(ctx, x, y, name) {
     ctx.drawImage(image, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 }
 
+function drawStatus() {
+    let statusCanvas = document.getElementById("statusBoard");
+    let ctx = statusCanvas.getContext("2d");
+
+    ctx.clearRect(0, 0, CANVAS_WIDTH_SIZE, CELL_SIZE);
+
+    for (let i = 0; i < life; i++) {
+        insertImage(ctx, i, 0, "heart");
+    }
+
+    ctx.color = "black";
+
+    // speed
+    ctx.font = "16px Quicksand";
+    ctx.textAlign = "center";
+    ctx.fillText(`Speed: ${level[current_level].speed} ms`, CANVAS_WIDTH_SIZE/2, 16, 140);
+
+    // score
+    ctx.font = "20px Quicksand";
+    ctx.textAlign = "end";
+    ctx.fillText(`Score: ${snake.score}`, CANVAS_WIDTH_SIZE, 15);
+
+    // level
+    let levelCanvas = document.getElementById("level");
+    let levelCtx = levelCanvas.getContext("2d");
+
+    levelCtx.clearRect(0, 0, 140, 32);
+
+    levelCtx.color = "black";
+    levelCtx.font = "bold 20px Quicksand";
+    levelCtx.textAlign = "center";
+    levelCtx.fillText(`Level ${current_level + 1}`, 70, 24, 140);
+
+}
+
 function getCurrentLevel(ctx, score) {
 
     if (score > 25) {
         ctx.fillText(`WIN`, 500, 580);
-        return;
+        // return;
     }
 
     if (score >= 0 && score < 5) {
@@ -230,69 +265,39 @@ function draw() {
         let snakeCanvas = document.getElementById("snakeBoard");
         let ctx = snakeCanvas.getContext("2d");
 
-        ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+        ctx.clearRect(0, 0, CANVAS_WIDTH_SIZE, CANVAS_HEIGHT_SIZE);
 
-        // drawCell(ctx, snake.head.x, snake.head.y, snake.color);
         insertImage(ctx, snake.head.x, snake.head.y, "snake-head");
 
         for (let i = 1; i < snake.body.length; i++) {
-            // drawCell(ctx, snake.body[i].x, snake.body[i].y, snake.color);
             insertImage(ctx, snake.body[i].x, snake.body[i].y, "snake-body");
         }
 
-        ctx.color = snake.color;
-        ctx.font = "20px Arial";
-
         getCurrentLevel(ctx, snake.score);
-        ctx.fillText("Score : "+ snake.score, 485, 30);
-        ctx.fillText("Speed : "+ level[current_level].speed, 485, 50);
 
         for (let i = 0; i < apples.length; i++) {
             let apple = apples[i];
             insertImage(ctx, apple.position.x, apple.position.y, "apple");
         }
 
-        for (let i = 0; i < life; i++) {
-            insertImage(ctx, i, 0, "heart");
-        }
-
         if (checkPrime(snake.score)) {
             insertImage(ctx, potion.position.x, potion.position.y, "potion");
         }
 
-        // drawScore(snake);
-        
-        // if (snake.score >=0 && snake.score < 5) {
-        //     move_interval = level[0].speed;
-        //     ctx.fillText("Level : 1", 500, 580);
-        // } else if (snake.score >=5 && snake.score < 10) {
-        //     move_interval = level[1].speed;
-        //     ctx.fillText("Level : 2", 500, 580);
-        // } else if (snake.score >= 10 && snake.score < 15){
-        //     move_interval = level[2].speed;
-        //     ctx.fillText("Level : 3", 500, 580);
-        // } else if (snake.score >= 15 && snake.score < 20){
-        //     move_interval = level[3].speed;
-        //     ctx.fillText("Level : 4", 500, 580);
-        // } else if (snake.score >= 20 && snake.score < 25){
-        //     move_interval = level[4].speed;
-        //     ctx.fillText("Level : 5", 500, 580);
-        // } else {
-        //     ctx.fillText("WIN", 500, 580);
-        // }
+        drawStatus();
 
     }, REDRAW_INTERVAL);
 }
 
 function teleport(snake) {
     if (snake.head.x < 0) {
-        snake.head.x = CANVAS_SIZE / CELL_SIZE - 1;
+        snake.head.x = CANVAS_WIDTH_SIZE / CELL_SIZE - 1;
     }
     if (snake.head.x >= WIDTH) {
         snake.head.x = 0;
     }
     if (snake.head.y < 0) {
-        snake.head.y = CANVAS_SIZE / CELL_SIZE - 1;
+        snake.head.y = CANVAS_HEIGHT_SIZE / CELL_SIZE - 1;
     }
     if (snake.head.y >= HEIGHT) {
         snake.head.y = 0;
@@ -310,12 +315,14 @@ function eat(snake, apples, potion) {
         }
     }
 
-    if (snake.head.x == potion.position.x && snake.head.y == potion.position.y) {
-        potion.position = initPosition();
-        snake.score++;
-        snake.body.push({x: snake.head.x, y: snake.head.y});
-        AUDIO_EAT.play();
-        life++;
+    if (checkPrime(snake.score)) {
+        if (snake.head.x == potion.position.x && snake.head.y == potion.position.y) {
+            potion.position = initPosition();
+            snake.score++;
+            snake.body.push({x: snake.head.x, y: snake.head.y});
+            AUDIO_EAT.play();
+            life++;
+        }
     }
 }
 
@@ -346,16 +353,6 @@ function moveUp(snake) {
 function checkCollision() {
     let isCollide = false;
     
-    // for (let i = 0; i < snakes.length; i++) {
-    //     for (let j = 0; j < snakes.length; j++) {
-    //         for (let k = 1; k < snakes[j].body.length; k++) {
-    //             if (snakes[i].head.x == snakes[j].body[k].x && snakes[i].head.y == snakes[j].body[k].y) {
-    //                 isCollide = true;
-    //             }
-    //         }
-    //     }
-    // }
-
     // cek collision antara snake head dan snake body
     for (let i = 1; i < snake.body.length; i++) {
         if (snake.head.x == snake.body[i].x && snake.head.y == snake.body[i].y) {
@@ -368,24 +365,27 @@ function checkCollision() {
         let wall = level[current_level].wall;
         for (let i = 0; i < wall.length; i++) {
             if (snake.head.x >= wall[i].start.x && snake.head.x <= wall[i].end.x && snake.head.y >= wall[i].start.y && snake.head.y <= wall[i].end.y) {
+                console.log(snake.head.x, snake.head.y);
                 isCollide = true;
             }
         }
     }
 
     if (isCollide) {
-        // alert("Game over");
-        // life = 3;
         life--;
         snake.body.splice(0, snake.body.length);
         snake.body.push({x: snake.head.x, y: snake.head.y});
+
+        let audio_collision = new Audio('assets/sound/collision.mp3');
+        audio_collision.play();
 
         if (life == 0) {
             let audio = new Audio('assets/sound/game-over.mp3');
             audio.play();
 
-            alert("Game over");
-            snake = initSnake("purple");
+            // alert("Game over");
+            showGameOverModal();
+            // snake = initSnake();
         }
     }
     // return isCollide;
@@ -409,23 +409,14 @@ function move(snake) {
     moveBody(snake);
     checkCollision();
     
-    // if (!checkCollision()) {
-    //     setTimeout(function() {
-    //         move(snake);
-    //     }, move_interval);
-    // } else {
-    //     initGame();
-    // }
 
     if (life > 0) {
         setTimeout(function() {
             move(snake);
         }, move_interval);
     } else {
-        // alert("Game over");
-        // snake = initSnake("purple");
-        life = 3;
-        initGame();
+        // life = 3;
+        // initGame();
     }
 }
 
@@ -463,5 +454,21 @@ document.addEventListener("keydown", function (event) {
 function initGame() {
     move(snake);
 }
+
+function showGameOverModal() {
+    const btnGameOver = document.getElementById("gameOverBtn");
+    btnGameOver.click();
+
+    const final_score = document.getElementById("finalScore");
+    final_score.innerHTML = snake.score;
+    
+    const btnTryAgain = document.getElementById("tryAgainBtn");
+    btnTryAgain.addEventListener("click", function() {
+        snake = initSnake();
+        life = 3;
+        initGame();
+    });
+}
+
 
 initGame();

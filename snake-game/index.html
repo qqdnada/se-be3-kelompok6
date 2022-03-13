@@ -1,11 +1,61 @@
-<html>
-    <head>
-    </head>
-        <script type="text/javascript" src="script.js"></script>
-    <body onload="draw();">
-        <h1>Snake</h1>
-        <!-- Soal no 3: Tambahkan resource gambar untuk ditampilkan di canvas -->
-        <!-- <img id="apple" style="display: none;" width="20" height="20" src="assets/apple.png" alt="Apple"> -->
-        <canvas id="snakeBoard" width="600" height="600" style="border:1px solid #000000;"></canvas>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+          font-family: "Quicksand", sans-serif;
+        }
+        h2 {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<script type="text/javascript" src="script.js"></script>
+<body onload="draw()">
+    <div class="container vh-100">
+        <div class="row my-auto">
+            <div class="col-md">
+                <canvas id="level" class="border border-dark rounded d-block mx-auto mt-4 mb-3" width="140" height="32"></canvas>
+                <canvas id="statusBoard" class="d-block mx-auto my-3" width="600" height="20"></canvas>
+                <canvas id="snakeBoard" class="border border-dark rounded d-block mx-auto my-3" width="600" height="420"></canvas>
+                <div class="text-center">
+                    <p class="mb-0">Snake Game by BE-3</p>
+                    <p>Kelompok 6</p>
+                </div>
+            </div>
+            <!-- Button trigger modal -->
+            <button type="button" id="gameOverBtn" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#gameOverModal">
+                Launch game over modal
+            </button>
+        </div>
+    </div>
+
+    
+    <!-- Modal Game Over-->
+    <div class="modal fade" id="gameOverModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-5">
+                    <h2>Game Over</h2>
+                    <p class="mb-0">Your score</p>
+                    <h3 id="finalScore"></h3>
+                    <button id="tryAgainBtn" class="btn btn-success d-block mx-auto mt-4" data-bs-dismiss="modal">Let's try again!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
