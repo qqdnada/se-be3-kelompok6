@@ -1,0 +1,23 @@
+
+name: Lighthouse CI
+on:
+  pull_request:
+    paths:
+      - "snake-game/**"
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Audit URLs using Lighthouse
+        uses: treosh/lighthouse-ci-action@v9
+        with:
+          urls: |
+            https://rg-km.github.io/se-be3-kelompok6/
+            https://rg-km.github.io/se-be3-kelompok6/snake-game/
+          budgetPath: ./budget.json # test performance budgets
+          uploadArtifacts: true # save results as an action artifacts
+          temporaryPublicStorage: true # upload lighthouse report to the temporary
